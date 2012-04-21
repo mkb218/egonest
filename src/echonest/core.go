@@ -1,5 +1,6 @@
 package echonest
 
+import "encoding/json"
 import "os"
 import "net/url"
 import "strings"
@@ -65,4 +66,27 @@ func (e *Echonest) GetCall(path string, method string, inargs []*Arg) (*http.Res
 	}
 	args = append(args, e.keyArg())
 	return http.Get(strings.Join([]string{"http:/", e.Host, basepath, path, method}, "/") + "?" + strings.Join(args, "&"))
+}
+
+func (e *Echonest) Upload(filetype string, data []byte) (analysis interface{}, err error) {
+	args := make([]string, 3)
+	args[0] = e.keyArg()
+	args[1] = "bucket=audio_summary"
+	args[2] = &Arg{"filetype", filetype}.Joined()
+	resp, err := http.Post(strings.Join([]string{"http:/", e.Host, basepath, path, method}, "/") + "?" + strings.Join(args, "&"), "application/octet-stream", data)
+	if err != nil {
+		return
+	}
+	j := json.NewDecoder(resp.Body)
+	tmpA := new(AudioSummary_t)
+	j.Decode(tmpA)
+	resp.Body.Close()
+	resp, err = http.Get(tmpA.AnalysisUrl)
+	if err != nil {
+		return
+	}
+	j = json.NewDecoder(resp.Body)
+	j.Decode(analysis)
+	resp.Body.Close()
+	return	
 }
