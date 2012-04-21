@@ -73,7 +73,7 @@ func (e *Echonest) Upload(filetype string, data []byte) (analysis interface{}, e
 	args := make([]string, 3)
 	args[0] = e.keyArg()
 	args[1] = "bucket=audio_summary"
-	args[2] = *((&Arg{"filetype", filetype}).Joined())
+	args[2] = (&Arg{"filetype", filetype}).Joined()
 	resp, err := http.Post(strings.Join([]string{"http:/", e.Host, basepath, "track", "upload"}, "/") + "?" + strings.Join(args, "&"), "application/octet-stream", bytes.NewReader(data))
 	if err != nil {
 		return
