@@ -80,8 +80,10 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 		log.Println("NewReq error")
 		return
 	}
+	req.Header.Set("Content-Type", "application/octet-stream")
 	req.ContentLength = int64(len(data))
 	resp, err := http.DefaultClient.Do(req)
+	req.Body.Close()
 	if err != nil {
 		log.Println("post error")
 		return
