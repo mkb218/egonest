@@ -1,6 +1,7 @@
 package echonest
 
 import "encoding/json"
+import "log"
 import "bytes"
 import "os"
 import "net/url"
@@ -76,6 +77,7 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 	args[2] = (&Arg{"filetype", filetype}).Joined()
 	resp, err := http.Post(strings.Join([]string{"http:/", e.Host, basepath, "track", "upload"}, "/") + "?" + strings.Join(args, "&"), "application/octet-stream", bytes.NewReader(data))
 	if err != nil {
+		log.Println("post error")
 		return
 	}
 	defer resp.Body.Close()
@@ -91,6 +93,7 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 		
 	err = j.Decode(&tmpA)
 	if err != nil {
+		log.Println("decode error")
 		return
 	}
 	id = tmpA.Response.Track.Id
