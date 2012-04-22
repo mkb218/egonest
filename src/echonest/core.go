@@ -81,8 +81,12 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 	defer resp.Body.Close()
 	j := json.NewDecoder(resp.Body)
 	var tmpA struct {
-		Audio_summary AudioSummary_t `json:"audio_summary"`
-		Track map[string]string
+		Response struct {
+			Track struct {
+				Id string `json:"id"`
+				Audio_summary AudioSummary_t `json:"audio_summary"`
+			} `json:"track"`
+		} `json:"response"`
 	}
 		
 	err = j.Decode(&tmpA)
@@ -93,3 +97,34 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 	analysis_url = tmpA.Audio_summary.AnalysisUrl
 	return	
 }
+
+
+func (e *Echonest) Analyze(filetype string, id string) (analysis_url string, err error) {
+	args := make([]string, 3)
+	args[0] = e.keyArg()
+	args[1] = "bucket=audio_summary"
+	args[2] = (&Arg{"id", id}).Joined()
+	resp, err := http.Post(strings.Join([]string{"http:/", e.Host, basepath, "track", "analyze"}, "/") + "?" + strings.Join(args, "&"), "application/octet-stream", bytes.NewReader(data))
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	j := json.NewDecoder(resp.Body)
+	var tmpA struct {
+		Response struct {
+			Track struct {
+				Id string `json:"id"`
+				Audio_summary AudioSummary_t `json:"audio_summary"`
+			} `json:"track"`
+		} `json:"response"`
+	}
+		
+	err = j.Decode(&tmpA)
+	if err != nil {
+		return
+	}
+	id = tmpA.Track["id"]
+	analysis_url = tmpA.Audio_summary.AnalysisUrl
+	return	
+}
+
