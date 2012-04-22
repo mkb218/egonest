@@ -69,7 +69,7 @@ func (e *Echonest) GetCall(path string, method string, inargs []*Arg) (*http.Res
 	return http.Get(strings.Join([]string{"http:/", e.Host, basepath, path, method}, "/") + "?" + strings.Join(args, "&"))
 }
 
-func (e *Echonest) Upload(filetype string, data []byte) (analysis interface{}, err error) {
+func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string, err error) {
 	args := make([]string, 3)
 	args[0] = e.keyArg()
 	args[1] = "bucket=audio_summary"
@@ -78,16 +78,18 @@ func (e *Echonest) Upload(filetype string, data []byte) (analysis interface{}, e
 	if err != nil {
 		return
 	}
+	defer resp.Body.Close()
 	j := json.NewDecoder(resp.Body)
-	tmpA := new(AudioSummary_t)
-	j.Decode(tmpA)
-	resp.Body.Close()
-	resp, err = http.Get(tmpA.AnalysisUrl)
+	var tmpA struct {
+		Audio_summary AudioSummary_t `json:"audio_summary"`
+		Track map[string]string
+	}
+		
+	err = j.Decode(&tmpA)
 	if err != nil {
 		return
 	}
-	j = json.NewDecoder(resp.Body)
-	j.Decode(analysis)
-	resp.Body.Close()
+	id = Track["id"].(string)
+	analysis_url = tmpA.AnalysisUrl
 	return	
 }
