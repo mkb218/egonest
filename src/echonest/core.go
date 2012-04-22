@@ -100,11 +100,8 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 
 
 func (e *Echonest) Analyze(filetype string, id string) (analysis_url string, err error) {
-	args := make([]string, 3)
-	args[0] = e.keyArg()
-	args[1] = "bucket=audio_summary"
-	args[2] = (&Arg{"id", id}).Joined()
-	resp, err := http.Post(strings.Join([]string{"http:/", e.Host, basepath, "track", "analyze"}, "/") + "?" + strings.Join(args, "&"), "application/octet-stream", bytes.NewReader(data))
+	resp, err := http.PostForm(strings.Join([]string{"http:/", e.Host, basepath, "track", "analyze"}, "/"),
+		"multipart/form-data", url.Values{"api_key": w.Key, "bucket": "audio_summary", "id": id})
 	if err != nil {
 		return
 	}
