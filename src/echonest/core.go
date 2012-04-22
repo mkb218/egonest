@@ -89,7 +89,7 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 	if err != nil {
 		return
 	}
-	id = Track["id"].(string)
-	analysis_url = tmpA.AnalysisUrl
+	id = track["id"].(string)
+	analysis_url = tmpA.Audio_summary.AnalysisUrl
 	return	
 }
