@@ -75,7 +75,11 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 	args[0] = e.keyArg()
 	args[1] = "bucket=audio_summary"
 	args[2] = (&Arg{"filetype", filetype}).Joined()
-	req := http.NewRequest("POST", strings.Join([]string{"http:/", e.Host, basepath, "track", "upload"}, "/") + "?" + strings.Join(args, "&"), bytes.NewReader(data))
+	req, err := http.NewRequest("POST", strings.Join([]string{"http:/", e.Host, basepath, "track", "upload"}, "/") + "?" + strings.Join(args, "&"), bytes.NewReader(data))
+	if err != nil {
+		log.Println("NewReq error")
+		return
+	}
 	req.ContentLength = len(data)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
