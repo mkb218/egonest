@@ -101,7 +101,7 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 
 func (e *Echonest) Analyze(filetype string, id string) (analysis_url string, err error) {
 	resp, err := http.PostForm(strings.Join([]string{"http:/", e.Host, basepath, "track", "analyze"}, "/"),
-		"multipart/form-data", url.Values{"api_key": w.Key, "bucket": "audio_summary", "id": id})
+		url.Values{"api_key": {e.Key{, "bucket": {"audio_summary"{, "id": {id}})
 	if err != nil {
 		return
 	}
