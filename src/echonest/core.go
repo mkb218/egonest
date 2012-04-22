@@ -99,7 +99,7 @@ func (e *Echonest) Upload(filetype string, data []byte) (id, analysis_url string
 }
 
 
-func (e *Echonest) Analyze(filetype string, id string) (analysis_url string, err error) {
+func (e *Echonest) Analyze(id string) (analysis_url string, err error) {
 	resp, err := http.PostForm(strings.Join([]string{"http:/", e.Host, basepath, "track", "analyze"}, "/"),
 		url.Values{"api_key": {e.Key}, "bucket": {"audio_summary"}, "id": {id}})
 	if err != nil {
