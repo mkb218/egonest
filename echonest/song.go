@@ -12,7 +12,7 @@ type Status struct {
 type AudioSummary_t struct {
 	Duration float64
 	Energy float64
-	Mode bool
+	Mode int
 	AnalysisUrl string `json:"analysis_url"`
 	TimeSignature int `json:"time_signature"`
 	Key int
